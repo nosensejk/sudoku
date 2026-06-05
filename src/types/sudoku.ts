@@ -4,4 +4,6 @@ export interface Cell {
    error: boolean;
 }
 
+export type Difficulty = | "easy" | "medium" | "hard";
+
 export type Board = Cell[][]

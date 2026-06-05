@@ -4,13 +4,16 @@ import { useState, useEffect } from "react";
 import { validateBoard } from "./utils/validation";
 import { checkWin } from "./utils/checkWin";
 import { generateSolvedBoard } from "./utils/solver";
+import { type Difficulty } from "./types/sudoku";
 
 function App() {
   const [selectedCell, setSelectedCell] = useState<{
     row: number;
     col: number;
   } | null>(null);
-  const [board, setBoard] = useState(() => generateBoard());
+  const [difficulty, setDifficulty] = useState<Difficulty>("medium");
+  const [board, setBoard] = useState(() => generateBoard("medium"));
+  const [isWon, setIsWon] = useState(false);
 
   console.table(generateSolvedBoard());
   
@@ -27,7 +30,7 @@ function App() {
       );
       const validatedBoard = validateBoard(newBoard);
       if (checkWin(validatedBoard)) {
-        alert("You won!");
+        setIsWon(true);
       }
       return validatedBoard;
     });
@@ -78,13 +81,33 @@ function App() {
 
   return (
     <main className="flex flex-col min-h-screen items-center justify-center bg-slate-100">
-    <button onClick={() => setBoard(generateBoard())} className="mb-4 rounded bg-blue-500 px-4 py-2 text-white">New Game</button>
+      <select value={difficulty} onChange={(e) => setDifficulty(e.target.value as Difficulty)} className="rounded border px-3 py-2 mb-2">
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    <button onClick={() => setBoard(generateBoard(difficulty))} className="mb-4 rounded bg-blue-500 px-4 py-2 text-white">New Game</button>
       <SudokuBoard
         board={board}
         selectedCell={selectedCell}
         onSelectCell={setSelectedCell}
       />
+      {isWon && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50">
+          <div className="rounded-lg bg-white p-8 shadow-lg animate-popup">
+            <h2 className="mb-4 text-2xl font-bold">Congratulations!</h2>
+            <p className="mb-6">You solved the puzzle!</p>
+            <button onClick={() => {
+              setBoard(generateBoard(difficulty));
+              setIsWon(false);
+            }} className="rounded bg-blue-500 px-4 py-2 text-white">
+              New Game
+            </button>
+          </div>
+        </div>
+      )}
     </main>
+
   );
 }
 

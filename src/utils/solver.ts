@@ -76,3 +76,4 @@ export function generateSolvedBoard(): number[][] {
    solveBoard(board);
    return board as number[][];
 }
+
